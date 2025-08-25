@@ -1,6 +1,6 @@
 """WordPress Users management tools."""
 
-from typing import Optional, Dict, Any, Union, Annotated
+from typing import Optional, Dict, Any, Union, Annotated, Literal
 
 from src.server import mcp
 from src.config import config
@@ -24,7 +24,7 @@ def _format_users_response(response_json: Union[dict, list]) -> Union[dict, list
 
 @mcp.tool
 def list_users(
-    context: Annotated[str, "The context of users to list (view, embed, edit) - default: view"] = "view",
+    context: Annotated[Literal["view", "embed", "edit"], "The context of users to list - default: view"] = "view",
     has_published_posts: Annotated[bool, "Whether to show users who haven't published posts - default: true"] = True
 ) -> Dict[str, Any]:
     """List users in WordPress site. Only admin users have permission to do this."""
@@ -50,7 +50,7 @@ def list_users(
 
 
 @mcp.tool
-def get_me(context: Annotated[str, "The context of user info to retrieve (view, embed, edit) - default: edit"] = "edit") -> Dict[str, Any]:
+def get_me(context: Annotated[Literal["view", "embed", "edit"], "The context of user info to retrieve - default: edit"] = "edit") -> Dict[str, Any]:
     """Get all metadata of the current user in WordPress site, including roles and capabilities.
     
     Failed to get user info indicates authentication is not working correctly.

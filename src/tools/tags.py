@@ -1,6 +1,6 @@
 """WordPress Tags management tools."""
 
-from typing import Optional, Union, Dict, Any, Annotated
+from typing import Optional, Union, Dict, Any, Annotated, Literal
 
 from src.server import mcp
 from src.config import config
@@ -22,11 +22,11 @@ def _format_tag_response(response_json: Union[dict, list]) -> Union[dict, list]:
 
 @mcp.tool
 def list_tags(
-    context: Annotated[str, "The context of tags to list (view, embed, edit) - default: view"] = "view",
+    context: Annotated[Literal["view", "embed", "edit"], "The context of tags to list - default: view"] = "view",
     page: Annotated[int, "Page number to list - default: 1"] = 1,
     per_page: Annotated[int, "Number of tags per page - default: 10"] = 10,
     search_query: Annotated[Optional[str], "Limit results to those matching a string - default: None"] = None,
-    order: Annotated[str, "Sort order (asc, desc) - default: asc"] = "asc",
+    order: Annotated[Literal["asc", "desc"], "Sort order - default: asc"] = "asc",
     post_id: Annotated[Optional[int], "Limit to tags assigned to a specific post ID - default: None"] = None,
     slug: Annotated[Optional[str], "Limit to tag matching a specific slug - default: None"] = None
 ) -> Dict[str, Any]:

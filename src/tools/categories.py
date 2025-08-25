@@ -1,6 +1,6 @@
 """WordPress Categories management tools."""
 
-from typing import Optional, Union, Dict, Any, Annotated
+from typing import Optional, Union, Dict, Any, Annotated, Literal
 
 from src.server import mcp
 from src.config import config
@@ -22,11 +22,11 @@ def _format_category_response(response_json: Union[dict, list]) -> Union[dict, l
 
 @mcp.tool
 def list_categories(
-    context: Annotated[str, "The context of categories to list (view, embed, edit) - default: view"] = "view",
+    context: Annotated[Literal["view", "embed", "edit"], "The context of categories to list - default: view"] = "view",
     page: Annotated[int, "Page number to list - default: 1"] = 1,
     per_page: Annotated[int, "Number of categories per page - default: 10"] = 10,
     search_query: Annotated[Optional[str], "Limit results to those matching a string - default: None"] = None,
-    order: Annotated[str, "Sort order (asc, desc) - default: asc"] = "asc",
+    order: Annotated[Literal["asc", "desc"], "Sort order - default: asc"] = "asc",
     parent_id: Annotated[Optional[int], "Limit to categories assigned to a specific parent ID - default: None"] = None,
     post_id: Annotated[Optional[int], "Limit to categories assigned to a specific post ID - default: None"] = None,
     slug: Annotated[Optional[str], "Limit to category matching a specific slug - default: None"] = None

@@ -1,6 +1,6 @@
 """WordPress Posts management tools."""
 
-from typing import Optional, List, Union, Dict, Any, Annotated
+from typing import Optional, List, Union, Dict, Any, Annotated, Literal
 from urllib.parse import quote
 import requests
 
@@ -26,17 +26,17 @@ def _format_posts_response(response_json: Union[dict, list]) -> Union[dict, list
 
 @mcp.tool
 def list_posts(
-    context: Annotated[str, "The context of posts to list (view, embed, edit) - default: view"] = "view",
+    context: Annotated[Literal["view", "embed", "edit"], "The context of posts to list - default: view"] = "view",
     page: Annotated[int, "Page number to list - default: 1"] = 1,
     per_page: Annotated[int, "Number of posts per page - default: 10"] = 10,
     author_ids: Annotated[Optional[str], "Comma-separated list of author IDs - default: None"] = None,
     search_query: Annotated[Optional[str], "Limit results to those matching a string - default: None"] = None,
-    statuses: Annotated[str, "Comma-separated list of statuses (must be one of publish, future, draft, pending, private, trash, auto-draft, inherit, request-pending, request-confirmed, request-failed, request-completed) - default: publish"] = "publish",
+    statuses: Annotated[str, "Comma-separated list of statuses (publish, future, draft, pending, private, trash, auto-draft, inherit, request-pending, request-confirmed, request-failed, request-completed) - default: publish"] = "publish",
     publish_after: Annotated[Optional[str], "ISO 8601 date to filter posts published after - default: None"] = None,
     publish_before: Annotated[Optional[str], "ISO 8601 date to filter posts published before - default: None"] = None,
     modified_after: Annotated[Optional[str], "ISO 8601 date to filter posts modified after - default: None"] = None,
     modified_before: Annotated[Optional[str], "ISO 8601 date to filter posts modified before - default: None"] = None,
-    order: Annotated[str, "Sort order (asc, desc) - default: desc"] = "desc",
+    order: Annotated[Literal["asc", "desc"], "Sort order - default: desc"] = "desc",
     categories: Annotated[Optional[str], "Comma-separated list of category IDs - default: None"] = None,
     tags: Annotated[Optional[str], "Comma-separated list of tag IDs - default: None"] = None
 ) -> Dict[str, Any]:
@@ -130,7 +130,7 @@ def list_posts(
 @mcp.tool
 def retrieve_post(
     post_id: Annotated[int, "The ID of the post"],
-    context: Annotated[str, "The context of the post (view, embed, edit) - default: view"] = "view",
+    context: Annotated[Literal["view", "embed", "edit"], "The context of the post - default: view"] = "view",
     password: Annotated[Optional[str], "Password for protected posts - default: None"] = None
 ) -> Dict[str, Any]:
     """Retrieve all metadata of a post in WordPress site."""
@@ -158,17 +158,17 @@ def retrieve_post(
 def create_post(
     title: Annotated[str, "The title of the post - default: empty"] = "",
     content: Annotated[str, "The content of the post (use HTML tags for formatting) - default: empty"] = "",
-    status: Annotated[str, "Status of the post (publish, future, draft, pending, private) - default: draft"] = "draft",
-    comment_status: Annotated[str, "Comment status (open, closed) - default: open"] = "open",
+    status: Annotated[Literal["publish", "future", "draft", "pending", "private"], "Status of the post - default: draft"] = "draft",
+    comment_status: Annotated[Literal["open", "closed"], "Comment status - default: open"] = "open",
     sticky: Annotated[bool, "Whether the post is sticky - default: false"] = False,
     password: Annotated[Optional[str], "Password for the post - default: None"] = None,
     slug: Annotated[Optional[str], "URL slug for the post - default: None"] = None,
     date: Annotated[Optional[str], "ISO 8601 date string for publishing - default: None"] = None,
     featured_media: Annotated[Optional[int], "ID of featured media file - default: None"] = None,
-    format: Annotated[str, "Post format (standard, aside, chat, gallery, link, image, quote, status, video, audio) - default: standard"] = "standard",
+    format: Annotated[Literal["standard", "aside", "chat", "gallery", "link", "image", "quote", "status", "video", "audio"], "Post format - default: standard"] = "standard",
     author_id: Annotated[Optional[int], "ID of the author - default: None"] = None,
     excerpt: Annotated[Optional[str], "Post excerpt - default: None"] = None,
-    ping_status: Annotated[str, "Ping status (open, closed) - default: open"] = "open",
+    ping_status: Annotated[Literal["open", "closed"], "Ping status - default: open"] = "open",
     categories: Annotated[Optional[str], "Comma-separated list of category IDs - default: None"] = None,
     tags: Annotated[Optional[str], "Comma-separated list of tag IDs - default: None"] = None
 ) -> Dict[str, Any]:
@@ -258,17 +258,17 @@ def update_post(
     post_id: Annotated[int, "ID of the post to update"],
     title: Annotated[Optional[str], "New title for the post - default: None"] = None,
     content: Annotated[Optional[str], "New content for the post (use HTML tags for formatting) - default: None"] = None,
-    status: Annotated[Optional[str], "New status (publish, future, draft, pending, private) - default: None"] = None,
-    comment_status: Annotated[Optional[str], "New comment status (open, closed) - default: None"] = None,
+    status: Annotated[Optional[Literal["publish", "future", "draft", "pending", "private"]], "New status - default: None"] = None,
+    comment_status: Annotated[Optional[Literal["open", "closed"]], "New comment status - default: None"] = None,
     sticky: Annotated[Optional[bool], "Whether the post should be sticky - default: None"] = None,
     password: Annotated[Optional[str], "New password for the post - default: None"] = None,
     slug: Annotated[Optional[str], "New URL slug - default: None"] = None,
     date: Annotated[Optional[str], "New publication date (ISO 8601 format) - default: None"] = None,
     featured_media: Annotated[Optional[int], "New featured media ID - default: None"] = None,
-    format: Annotated[Optional[str], "New post format (standard, aside, chat, gallery, link, image, quote, status, video, audio) - default: None"] = None,
+    format: Annotated[Optional[Literal["standard", "aside", "chat", "gallery", "link", "image", "quote", "status", "video", "audio"]], "New post format - default: None"] = None,
     author_id: Annotated[Optional[int], "New author ID - default: None"] = None,
     excerpt: Annotated[Optional[str], "New excerpt - default: None"] = None,
-    ping_status: Annotated[Optional[str], "New ping status (open, closed) - default: None"] = None,
+    ping_status: Annotated[Optional[Literal["open", "closed"]], "New ping status - default: None"] = None,
     categories: Annotated[Optional[str], "New comma-separated list of category IDs - default: None"] = None,
     tags: Annotated[Optional[str], "New comma-separated list of tag IDs - default: None"] = None
 ) -> Dict[str, Any]:

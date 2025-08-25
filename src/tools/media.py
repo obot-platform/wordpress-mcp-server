@@ -1,6 +1,6 @@
 """WordPress Media management tools."""
 
-from typing import Optional, Union, Dict, Any, Annotated
+from typing import Optional, Union, Dict, Any, Annotated, Literal
 from urllib.parse import quote
 
 from src.server import mcp
@@ -25,17 +25,17 @@ def _format_media_response(response_json: Union[dict, list]) -> Union[dict, list
 
 @mcp.tool
 def list_media(
-    context: Annotated[str, "The context of media files to list (view, embed, edit) - default: view"] = "view",
+    context: Annotated[Literal["view", "embed", "edit"], "The context of media files to list - default: view"] = "view",
     page: Annotated[int, "Page number to list - default: 1"] = 1,
     per_page: Annotated[int, "Number of media files per page - default: 10"] = 10,
-    media_type: Annotated[Optional[str], "Limit to specific media type (image, video, text, application, audio) - default: None"] = None,
+    media_type: Annotated[Optional[Literal["image", "video", "text", "application", "audio"]], "Limit to specific media type - default: None"] = None,
     author_ids: Annotated[Optional[str], "Comma-separated list of author IDs - default: None"] = None,
     search_query: Annotated[Optional[str], "Limit results to those matching a string - default: None"] = None,
     publish_after: Annotated[Optional[str], "ISO 8601 date to filter media files uploaded after - default: None"] = None,
     publish_before: Annotated[Optional[str], "ISO 8601 date to filter media files uploaded before - default: None"] = None,
     modified_after: Annotated[Optional[str], "ISO 8601 date to filter media files modified after - default: None"] = None,
     modified_before: Annotated[Optional[str], "ISO 8601 date to filter media files modified before - default: None"] = None,
-    order: Annotated[str, "Sort order (asc, desc) - default: desc"] = "desc"
+    order: Annotated[Literal["asc", "desc"], "Sort order - default: desc"] = "desc"
 ) -> Dict[str, Any]:
     """List media files in WordPress site and get basic information of each media file.
     
