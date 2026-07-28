@@ -1,5 +1,6 @@
 """Verify WordPress tools register with FastMCP without starting a server."""
 
+import inspect
 import os
 import unittest
 
@@ -39,6 +40,8 @@ EXPECTED_TOOL_NAMES = {
 
 class FastMCPSmokeTest(unittest.IsolatedAsyncioTestCase):
     async def test_all_wordpress_tools_register(self):
+        self.assertFalse(inspect.iscoroutinefunction(mcp.run))
+
         async with Client(mcp) as client:
             tools = await client.list_tools()
 
