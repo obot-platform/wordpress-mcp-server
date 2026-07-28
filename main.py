@@ -6,7 +6,7 @@ from src.server import mcp
 def main():
     """Main entry point for the WordPress MCP Server."""
     try:
-        # Import all the tools
+        # Import tool modules so their @mcp.tool decorators register each tool.
         from src.tools import posts, users, media, categories, tags, site
         mcp.run()
     except KeyboardInterrupt:

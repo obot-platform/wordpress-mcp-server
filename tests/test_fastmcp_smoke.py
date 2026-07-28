@@ -11,6 +11,8 @@ os.environ.setdefault("WORDPRESS_USERNAME", "test-user")
 os.environ.setdefault("WORDPRESS_PASSWORD", "test-password")
 
 from src.server import mcp
+
+# Import tool modules so their @mcp.tool decorators register each tool.
 from src.tools import categories, media, posts, site, tags, users
 
 
