@@ -1640,7 +1640,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fastmcp" },
+    { name = "fastmcp", specifier = ">=3,<4" },
     { name = "python-dotenv" },
     { name = "requests" },
     { name = "typing-extensions" },

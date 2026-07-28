@@ -1,6 +1,5 @@
 """WordPress MCP Server main entry point."""
 
-import asyncio
 from src.server import mcp
 
 
@@ -9,7 +8,7 @@ def main():
     try:
         # Import all the tools
         from src.tools import posts, users, media, categories, tags, site
-        asyncio.run(mcp.run())
+        mcp.run()
     except KeyboardInterrupt:
         print("\nWordPress MCP Server shutting down...")
     except Exception as e:
