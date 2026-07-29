@@ -1,10 +1,10 @@
 # WordPress MCP Server
 
-A Model Context Protocol (MCP) server for managing WordPress sites via the REST API. This server provides 18 tools for comprehensive WordPress management including posts, users, media, categories, tags, and site settings.
+A Model Context Protocol (MCP) server for managing WordPress sites via the REST API. This server provides 21 tools for comprehensive WordPress management including posts, users, media, categories, tags, and site settings.
 
 ## Features
 
-### Posts Management (6 tools)
+### Posts Management (5 tools)
 - **list_posts**: List posts with filtering options (status, date, author, categories, tags)
 - **retrieve_post**: Get detailed information about a specific post
 - **create_post**: Create new posts with full metadata support
@@ -16,9 +16,10 @@ A Model Context Protocol (MCP) server for managing WordPress sites via the REST 
 - **get_me**: Get current user information and capabilities
 - **validate_credential**: Test WordPress authentication
 
-### Media Management (3 tools)
+### Media Management (4 tools)
 - **list_media**: List media files with filtering options
-- **update_media**: Update media metadata (title, slug, author)
+- **upload_media**: Upload local media files with title, alt text, caption, description, and post attachment metadata
+- **update_media**: Update media metadata (title, slug, author, alt text, caption, description, post attachment)
 - **delete_media**: Delete media files
 
 ### Categories Management (4 tools)
