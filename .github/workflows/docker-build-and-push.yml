@@ -72,3 +72,11 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif
+      - name: Enforce vulnerability policy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          skip-dirs: "**/venv"
+          format: "table"
+          severity: "HIGH,CRITICAL"
+          exit-code: "1"
