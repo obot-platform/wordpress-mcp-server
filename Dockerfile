@@ -1,4 +1,4 @@
-FROM ghcr.io/obot-platform/nanobot@sha256:2cdc20cff957ecfe4a0409209a78a2f1968849cf4f61ee59c60862d55b33e4ff
+FROM ghcr.io/obot-platform/nanobot:v0.0.91@sha256:2cdc20cff957ecfe4a0409209a78a2f1968849cf4f61ee59c60862d55b33e4ff
 
 WORKDIR /app
 
