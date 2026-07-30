@@ -64,7 +64,7 @@ jobs:
       - name: Run Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          image-ref: ghcr.io/${{ github.repository }}@${{ steps.build-and-push.outputs.digest }}
           skip-dirs: "**/venv"
           format: "sarif"
           output: "trivy-results.sarif"
@@ -72,3 +72,11 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif
+      - name: Enforce vulnerability policy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}@${{ steps.build-and-push.outputs.digest }}
+          skip-dirs: "**/venv"
+          format: "table"
+          severity: "HIGH,CRITICAL"
+          exit-code: "1"

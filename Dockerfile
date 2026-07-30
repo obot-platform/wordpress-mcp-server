@@ -1,14 +1,18 @@
-FROM ghcr.io/obot-platform/mcp-images-phat:main
+FROM ghcr.io/obot-platform/nanobot:v0.0.91@sha256:2cdc20cff957ecfe4a0409209a78a2f1968849cf4f61ee59c60862d55b33e4ff
 
 WORKDIR /app
 
-RUN mkdir /app/src
+USER root
+
+RUN mkdir -p /app/src && chown -R 1000:1000 /app
 
 COPY src/ ./src
 COPY .python-version .
 COPY LICENSE .
 COPY main.py .
 COPY pyproject.toml .
+
+USER 1000
 
 RUN uv sync
 
@@ -29,7 +33,7 @@ mcpServers:
       WORDPRESS_PASSWORD: ${WORDPRESS_PASSWORD}
 EOF
 
-RUN chown 1000 /nanobot.yaml
+RUN chown 1000:1000 /nanobot.yaml
 
 ENTRYPOINT ["nanobot"]
 
