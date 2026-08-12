@@ -1,5 +1,7 @@
 """WordPress Media management tools."""
 
+import mimetypes
+from pathlib import Path
 from typing import Optional, Union, Dict, Any, Annotated, Literal
 from urllib.parse import quote
 
@@ -16,11 +18,42 @@ def _format_media_response(response_json: Union[dict, list]) -> Union[dict, list
             keys = [
                 "id", "date", "date_gmt", "modified", "modified_gmt",
                 "slug", "status", "type", "link", "title", "author",
-                "media_type", "mime_type"
+                "media_type", "mime_type", "source_url", "alt_text",
+                "caption", "description"
             ]
             return {key: response_json[key] for key in keys if key in response_json}
     except Exception:
         return response_json
+
+
+def _build_media_metadata(
+    title: Optional[str] = None,
+    alt_text: Optional[str] = None,
+    caption: Optional[str] = None,
+    description: Optional[str] = None,
+    slug: Optional[str] = None,
+    author_id: Optional[int] = None,
+    post_id: Optional[int] = None,
+) -> Dict[str, Any]:
+    """Build a WordPress media metadata payload from optional fields."""
+    media_data: Dict[str, Any] = {}
+
+    if title is not None:
+        media_data["title"] = title
+    if alt_text is not None:
+        media_data["alt_text"] = alt_text
+    if caption is not None:
+        media_data["caption"] = caption
+    if description is not None:
+        media_data["description"] = description
+    if slug is not None:
+        media_data["slug"] = slug
+    if author_id is not None:
+        media_data["author"] = author_id
+    if post_id is not None:
+        media_data["post"] = post_id
+
+    return media_data
 
 
 @mcp.tool
@@ -106,25 +139,83 @@ def list_media(
 
 
 @mcp.tool
+def upload_media(
+    file_path: Annotated[str, "Local path of the media file to upload"],
+    title: Annotated[Optional[str], "Title for the media file - default: None"] = None,
+    alt_text: Annotated[Optional[str], "Alternative text for images - default: None"] = None,
+    caption: Annotated[Optional[str], "Caption for the media file - default: None"] = None,
+    description: Annotated[Optional[str], "Description for the media file - default: None"] = None,
+    slug: Annotated[Optional[str], "Slug for the media file - default: None"] = None,
+    author_id: Annotated[Optional[int], "Author ID for the media file - default: None"] = None,
+    post_id: Annotated[Optional[int], "Post ID to attach the media file to - default: None"] = None,
+) -> Dict[str, Any]:
+    """Upload a local media file to the WordPress media library.
+
+    This sends a multipart upload to the WordPress REST API and can attach
+    editor-facing metadata such as image alt text, caption, and description.
+    """
+    path = Path(file_path).expanduser()
+
+    if not path.exists():
+        raise ValueError(f"Media file does not exist: {file_path}")
+    if not path.is_file():
+        raise ValueError(f"Media path is not a file: {file_path}")
+
+    media_data = _build_media_metadata(
+        title=title,
+        alt_text=alt_text,
+        caption=caption,
+        description=description,
+        slug=slug,
+        author_id=author_id,
+        post_id=post_id,
+    )
+    mime_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+
+    session = config.create_session()
+    session.headers.pop("Content-Type", None)
+
+    with path.open("rb") as file_handle:
+        response = session.post(
+            f"{config.api_url}/media",
+            files={"file": (path.name, file_handle, mime_type)},
+            data=media_data,
+        )
+
+    if response.status_code == 201:
+        return _format_media_response(response.json())
+    elif response.status_code == 401:
+        raise Exception(f"Authentication failed: {response.text}")
+    elif response.status_code == 403:
+        raise Exception(f"Permission denied: {response.text}")
+    else:
+        raise Exception(f"Failed to upload media: {response.status_code} - {response.text}")
+
+
+@mcp.tool
 def update_media(
     media_id: Annotated[int, "The ID of the media file"],
     title: Annotated[Optional[str], "New title for the media file - default: None"] = None,
     slug: Annotated[Optional[str], "New slug for the media file - default: None"] = None,
-    author_id: Annotated[Optional[int], "New author ID for the media file - default: None"] = None
+    author_id: Annotated[Optional[int], "New author ID for the media file - default: None"] = None,
+    alt_text: Annotated[Optional[str], "New alternative text for images - default: None"] = None,
+    caption: Annotated[Optional[str], "New caption for the media file - default: None"] = None,
+    description: Annotated[Optional[str], "New description for the media file - default: None"] = None,
+    post_id: Annotated[Optional[int], "New post ID to attach the media file to - default: None"] = None,
 ) -> Dict[str, Any]:
     """Update the metadata of a media file in WordPress site.
     
     At least one field must be provided to update.
     """
-    # Build update data (only include provided fields)
-    media_data = {}
-    
-    if title is not None:
-        media_data["title"] = title
-    if slug is not None:
-        media_data["slug"] = slug
-    if author_id is not None:
-        media_data["author"] = author_id
+    media_data = _build_media_metadata(
+        title=title,
+        alt_text=alt_text,
+        caption=caption,
+        description=description,
+        slug=slug,
+        author_id=author_id,
+        post_id=post_id,
+    )
     
     if not media_data:
         raise ValueError("At least one field must be provided to update")
