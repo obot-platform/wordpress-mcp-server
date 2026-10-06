@@ -1,5 +1,7 @@
 """WordPress MCP Server main entry point."""
 
+import sys
+
 from src.server import mcp
 
 
@@ -10,9 +12,9 @@ def main():
         from src.tools import posts, users, media, categories, tags, site
         mcp.run()
     except KeyboardInterrupt:
-        print("\nWordPress MCP Server shutting down...")
+        print("\nWordPress MCP Server shutting down...", file=sys.stderr)
     except Exception as e:
-        print(f"Error starting WordPress MCP Server: {e}")
+        print(f"Error starting WordPress MCP Server: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":
