@@ -1,10 +1,10 @@
 # WordPress MCP Server
 
-A Model Context Protocol (MCP) server for managing WordPress sites via the REST API. This server provides 18 tools for comprehensive WordPress management including posts, users, media, categories, tags, and site settings.
+A Model Context Protocol (MCP) server for managing WordPress sites via the REST API. This server provides 20 tools for managing posts, users, media, categories, tags, and site settings.
 
 ## Features
 
-### Posts Management (6 tools)
+### Posts Management (5 tools)
 - **list_posts**: List posts with filtering options (status, date, author, categories, tags)
 - **retrieve_post**: Get detailed information about a specific post
 - **create_post**: Create new posts with full metadata support
@@ -73,7 +73,45 @@ uv sync
 uv run python main.py
 ```
 
+This runs FastMCP over stdio.
+
+### Running the container
+
+The container uses [mmmcp](https://github.com/obot-platform/mmmcp) to expose the
+same tools over Streamable HTTP at `http://localhost:8099/`.
+Export the three WordPress environment variables above, then run:
+
+```bash
+docker build -t wordpress-mcp .
+docker run --rm -p 127.0.0.1:8099:8099 \
+  -e WORDPRESS_SITE -e WORDPRESS_USERNAME -e WORDPRESS_PASSWORD \
+  wordpress-mcp
+```
+
+Python dependencies are installed from `uv.lock` during the image build;
+starting the container does not download dependencies. The container runs as
+UID/GID `1000:1000`. mmmcp stores its SQLite event database in
+`/var/lib/mmmcp`, which must remain writable. Mount a named volume there if
+event storage should persist across container replacements.
+
+`/healthz` checks liveness and `/readyz` checks the MCP catalog and event store.
+These probes do not validate WordPress credentials; use `validate_credential`
+for that. Existing MCP sessions reconnect when the container is replaced.
+
 ## Development
+
+Run the unit test and, optionally, the container integration suite:
+
+```bash
+uv sync --frozen
+uv run --frozen python -m unittest discover -s tests -v
+docker build -t wordpress-mcp:test .
+WORDPRESS_TEST_IMAGE=wordpress-mcp:test uv run --frozen python -m unittest discover -s tests -v
+```
+
+Container tests use an isolated Docker network and a mock WordPress API. They
+do not need real credentials or access to a WordPress site. PR CI runs them
+on both amd64 and arm64.
 
 The project structure:
 
