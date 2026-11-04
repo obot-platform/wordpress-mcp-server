@@ -1,6 +1,6 @@
 FROM ghcr.io/astral-sh/uv:0.13.7@sha256:96f40d3904aad8d0bd010539001d36c8e2188b981e1334471a90c4a1d93bb490 AS uv
 
-FROM ghcr.io/obot-platform/mmmcp:v0.2.0@sha256:4ecdceee76e6066e00bf023ae4c1fb3b80551669ee127d39418dceeace963caf AS python-base
+FROM ghcr.io/obot-platform/mmmcp:v0.2.1@sha256:ad7b9357a815e22d3540ee9a5c9c178ccb1778312b111ec0b941497b4cc819f0 AS python-base
 
 USER root
 # Release images pin OS packages; allow patched versions when adding Python.
